@@ -1,5 +1,6 @@
 import json
-
+import time
+import datetime
 import requests
 import re
 import random
@@ -13,16 +14,19 @@ def keyword(sender,message, uid, gid = None):
         whattoeat(uid,gid,sender)
     if message[0:5]=='石头剪刀布' or message[0:5]=='剪刀石头布':
         rockpaperscissors(uid,gid,sender)
+    if message[0:2] == '晚安': 
+        nighty(uid,gid,sender)
     #if message[0:4] == 'setu': # 你们懂的
     #    setu()
-
+    
+    
 #连接测试
 def helloworld(uid,gid,sender):
     if gid != None: # 如果是群聊信息
         sendername=list(sender.values())[2] if list(sender.values())[2]!="" else list(sender.values())[4]
         requests.get(url='http://127.0.0.1:5700/send_group_msg?group_id={0}&message={1} {2}'.format(gid,'Hello World!',sendername))
     else: # 如果是私聊信息
-        requests.get(url='http://127.0.0.1:5700/send_private_msg?user_id={0}&message={1} {2}'.format(uid, 'Hhello World!',list(sender.values())[1]))
+        requests.get(url='http://127.0.0.1:5700/send_private_msg?user_id={0}&message={1} {2}'.format(uid, 'Hello World!',list(sender.values())[1]))
 #-------------------------
 #骰娘
 def rollingdice(uid,gid,sender,message):
@@ -106,8 +110,8 @@ def whattoeat(uid,gid,sender):
         requests.get(url='http://127.0.0.1:5700/send_private_msg?user_id={0}&message={1} {2}{3}'.format(uid, list(sender.values())[1],"要不要吃",rollingmeal()))
 
 def rollingmeal():
-    meals=("社畜快餐","汉堡","米粉米线","粥","四川风味","麻辣烫","香锅","炸鸡","烤串","陕西风味","长沙风味","日式定食","羊肉汤","港餐","便利店","猪脚饭","北方火锅","南方火锅","烤鱼","酸菜鱼","牛杂","拉面","肠粉","螺狮粉","椰子鸡","狂乱木曜日","鸡公煲","炒饭","烤内脏","烤鸡","烤鸭","烧鹅","麦辣鸡翅","提拉米苏","咖喱","萨莉亚","情寻糯米叉烧包")
-    return meals[random.randint(0,len(meals))]
+    meals=("社畜快餐","汉堡","米粉米线","粥","四川风味","麻辣烫","香锅","炸鸡","烤串","陕西风味","长沙风味","日式定食","羊肉汤","港餐","便利店","猪脚饭","北方火锅","南方火锅","烤鱼","酸菜鱼","牛杂","拉面","肠粉","螺狮粉","椰子鸡","狂乱木曜日","鸡公煲","炒饭","烤内脏","烤鸡","烤鸭","烧鹅","麦辣鸡翅","提拉米苏","咖喱","萨莉亚","东南亚菜","情寻糯米叉烧包")
+    return meals[random.randint(0,len(meals)-1)]
 #-------------------------
 #石头剪刀布
 def rockpaperscissors(uid,gid,sender):
@@ -121,6 +125,13 @@ def rollingrock():
     skills=("石头","剪刀","布")
     return skills[random.randint(0,3)]
 
+
+def nighty(uid,gid,sender):
+    if gid != None: # 如果是群聊信息
+        sendername=list(sender.values())[2] if list(sender.values())[2]!="" else list(sender.values())[4]
+        requests.get(url='http://127.0.0.1:5700/send_group_msg?group_id={0}&message={1}{2}'.format(gid,sendername,"晚安捏[CQ:image,file=http://gchat.qpic.cn/gchatpic_new/0/530077417-0-FFBD8609C6837A1F812B905F0510A18A/0]&auto_escape=false"))
+    else: # 如果是私聊信息
+        requests.get(url='http://127.0.0.1:5700/send_private_msg?user_id={0}&message={1}{2}'.format(uid,"晚安，"list(sender.values())[1],"[CQ:image,file=http://gchat.qpic.cn/gchatpic_new/0/530077417-0-FFBD8609C6837A1F812B905F0510A18A/0]&auto_escape=false"))
 
 """def setu(): 
     '本功能放在下面讲，这里的功能默认只有群聊，没考虑私聊，请把机器人拉进群再发消息'
