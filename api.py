@@ -24,6 +24,10 @@ def keyword(sender,message, uid, gid = None):
         animals(uid,gid)
     if message[0:3] == '卡尔，': 
         whichone(uid,gid,message)
+    if message[0:5] == '.draw': 
+        drawTarot(uid,gid,message,sender)
+    if message[0:4] == '抽牌帮助': 
+        tarotRules(uid,gid,message)
     #if message[0:4] == 'setu': # 你们懂的
     #    setu()
     
@@ -196,6 +200,53 @@ def whichone(uid,gid,message):
         requests.get(url='http://127.0.0.1:5700/send_group_msg?group_id={0}&message={1}'.format(gid,"卡尔说"+result))
     else: # 如果是私聊信息
         requests.get(url='http://127.0.0.1:5700/send_private_msg?user_id={0}&message={1}'.format(uid,"卡尔说"+result))
+        
+#.draw单张塔罗牌
+def drawTarot(uid,gid,message,sender):
+    #if message==".draw单张塔罗牌" or not isnumber(message[10]) or int(message[10])<1 or int(message[10])>8:
+    if len(message)<=6 or message[5]!="(":
+        if gid != None: # 如果是群聊信息
+            requests.get(url='http://127.0.0.1:5700/send_group_msg?group_id={0}&message={1}'.format(gid,"draw error，卡尔在抽牌帮助里为你写了抽牌格式"))
+        else: # 如果是私聊信息
+            requests.get(url='http://127.0.0.1:5700/send_private_msg?user_id={0}&message={1}'.format(uid,"draw error，卡尔在抽牌帮助里为你写了抽牌格式"))
+        return
+    i=6
+    str_num=""
+    while i<len(message):
+        if not isnumber(message[i]):
+            break
+        str_num=str_num+message[i]
+        i+=1
+        if message[i]==")":
+            if int(str_num)>12 or int(str_num)<=0:
+                break
+            result=getTarot(int(str_num))
+            if gid != None: # 如果是群聊信息
+                sendername=list(sender.values())[2] if list(sender.values())[2]!="" else list(sender.values())[4]
+                requests.get(url='http://127.0.0.1:5700/send_group_msg?group_id={0}&message={1}'.format(gid,sendername+"抽到了"+result))
+            else: # 如果是私聊信息
+                requests.get(url='http://127.0.0.1:5700/send_private_msg?user_id={0}&message={1}'.format(uid,list(sender.values())[1]+"抽到了"+result))
+            return
+    
+    
+    if gid != None: # 如果是群聊信息
+        requests.get(url='http://127.0.0.1:5700/send_group_msg?group_id={0}&message={1}'.format(gid,"draw error，卡尔在抽牌帮助里为你写了抽牌格式"))
+    else: # 如果是私聊信息
+        requests.get(url='http://127.0.0.1:5700/send_private_msg?user_id={0}&message={1}'.format(uid,"draw error，卡尔在抽牌帮助里为你写了抽牌格式"))
+
+def getTarot(tarotoffset):
+    f=open(path+r"\..\texts\tarot.txt","r",encoding='utf-8')
+    tarotinfo=f.readlines()
+    randomnum=(random.randint(0,41)+tarotoffset)%42
+    return tarotinfo[randomnum]
+
+def tarotRules(uid,gid,message):
+    f=open(path+r"\..\texts\tarotRules.txt","r",encoding='utf-8')
+    result=f.read()
+    if gid != None: # 如果是群聊信息
+        requests.get(url='http://127.0.0.1:5700/send_group_msg?group_id={0}&message={1} '.format(gid,result))
+    else: # 如果是私聊信息
+        requests.get(url='http://127.0.0.1:5700/send_private_msg?user_id={0}&message={1}'.format(uid, result))
 """def setu(): 
     '本功能放在下面讲，这里的功能默认只有群聊，没考虑私聊，请把机器人拉进群再发消息'
     '如果想实现私聊功能可以参考上面查战绩的代码'
